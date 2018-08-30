@@ -6,7 +6,7 @@ import io.reactivex.Flowable
 import io.reactivex.Maybe
 import io.reactivex.Single
 
-open class KeyKrate<T>(private val krate: Krate, private val key: String) {
+class KeyKrate<T>(private val krate: Krate, private val key: String) {
 
     fun get(): Maybe<T> = krate.get(key)
 

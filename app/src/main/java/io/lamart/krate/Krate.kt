@@ -9,7 +9,6 @@ import io.reactivex.Flowable
 import io.reactivex.Maybe
 import io.reactivex.Single
 
-
 interface Krate {
 
     fun <T> get(key: String): Maybe<T>

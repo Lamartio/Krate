@@ -6,7 +6,6 @@ import android.database.sqlite.SQLiteDatabase
 import io.lamart.krate.Interceptor
 import io.lamart.krate.Krate
 import io.lamart.krate.Serializer
-import io.lamart.krate.database.Constants.Companion.FLAGS
 import io.lamart.krate.database.Constants.Companion.KEY
 import io.lamart.krate.database.Constants.Companion.MODIFIED
 import io.lamart.krate.database.Constants.Companion.VALUE
@@ -28,7 +27,6 @@ class DatabaseKrate(
         database.execSQL(
                 "CREATE TABLE IF NOT EXISTS $tableName (" +
                         "$KEY TEXT UNIQUE PRIMARY KEY NOT NULL," +
-                        "$FLAGS INT NOT NULL," +
                         "$MODIFIED LONG NOT NULL," +
                         "$VALUE BLOB NOT NULL" +
                         ");" +
@@ -42,7 +40,7 @@ class DatabaseKrate(
                     cursor.value
                             .let(::ByteArrayInputStream)
                             .let(interceptor::read)
-                            .use { input -> serializer.run { input.read<T>(key, cursor.flags) } }
+                            .use { input -> serializer.run { input.read<T>(key) } }
                 }
             }
 
@@ -57,8 +55,7 @@ class DatabaseKrate(
                     get<T>(key),
                     getModified(key)
                             .let(fetch)
-                            .flatMapSingle { put(key, it).toSingleDefault(it) }
-                            .toMaybe()
+                            .flatMapSingleElement { put(key, it).toSingleDefault(it) }
             )
 
     override fun remove(key: String): Completable =
@@ -71,27 +68,24 @@ class DatabaseKrate(
                 database.insertWithOnConflict(
                         tableName,
                         KEY,
-                        getValue(key, value),
+                        getValues(key, value),
                         SQLiteDatabase.CONFLICT_REPLACE
                 )
             }
 
-    private fun <T> getValue(key: String, value: T): ContentValues =
+    private fun <T> getValues(key: String, value: T): ContentValues =
             ContentValues(4).apply {
-                serializer.getFlags(value).let { flags ->
-                    put(KEY, key)
-                    put(FLAGS, flags)
-                    put(MODIFIED, System.currentTimeMillis())
-                    serialize(value, flags).let { put(VALUE, it) }
-                }
+                put(KEY, key)
+                put(MODIFIED, System.currentTimeMillis())
+                put(VALUE, serialize(value))
             }
 
-    private fun <T> serialize(value: T, flags: Int): ByteArray =
+    private fun <T> serialize(value: T): ByteArray =
             ByteArrayOutputStream()
                     .also {
                         interceptor.write(it).let { output ->
                             try {
-                                serializer.run { output.write(value, flags) }
+                                serializer.run { output.write(value) }
                             } finally {
                                 output.flush()
                                 output.close()

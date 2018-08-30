@@ -14,7 +14,7 @@ class DirectoryKrate(
         private val directory: File,
         private val serializer: Serializer = Serializer.Default(),
         private val interceptor: Interceptor = Interceptor.Default,
-        private val info: InfoAdapter = InfoAdapter.Default()
+        private val adapter: DirectoryKrateAdapter = DirectoryKrateAdapter.Default()
 ) : Krate {
 
     override fun <T> get(key: String): Maybe<T> =
@@ -22,11 +22,7 @@ class DirectoryKrate(
                 directory.find(key)?.let { file ->
                     file.inputStream()
                             .let(interceptor::read)
-                            .use { input ->
-                                serializer.run {
-                                    input.read<T>(key, file.flags)
-                                }
-                            }
+                            .use { input -> serializer.run { input.read<T>(key) } }
                 }
             }
 
@@ -41,8 +37,7 @@ class DirectoryKrate(
                     get(key),
                     getModified(key)
                             .let(fetch)
-                            .flatMapSingle { put(key, it).toSingleDefault(it) }
-                            .toMaybe()
+                            .flatMapSingleElement { put(key, it).toSingleDefault(it) }
             )
 
     override fun remove(key: String): Completable =
@@ -50,34 +45,29 @@ class DirectoryKrate(
 
     override fun <T> put(key: String, value: T): Completable =
             Completable.fromAction {
-                serializer.getFlags(value).let { flags ->
-                    info.encode(key, flags, System.currentTimeMillis())
-                            .let { File(directory, it) }
-                            .apply { createNewFile() }
-                            .outputStream()
-                            .let(interceptor::write)
-                            .let { output ->
-                                try {
-                                    serializer.run { output.write(value, flags) }
-                                } finally {
-                                    output.flush()
-                                    output.close()
-                                }
+                adapter.encode(key, System.currentTimeMillis())
+                        .let { File(directory, it) }
+                        .apply { createNewFile() }
+                        .outputStream()
+                        .let(interceptor::write)
+                        .let { output ->
+                            try {
+                                serializer.run { output.write(value) }
+                            } finally {
+                                output.flush()
+                                output.close()
                             }
-                }
+                        }
             }
 
     private fun File.find(key: String): File? =
-            listFiles({ _, name -> info.run { name.containsKey(key) } }).firstOrNull()
-
-    private val File.flags: Int get() = name.let(info::decode).flags
+            listFiles({ _, name -> adapter.run { name.containsKey(key) } }).firstOrNull()
 
     private fun getModified(key: String) =
             directory
                     .find(key)
                     ?.name
-                    ?.let(info::decode)
-                    ?.modified
+                    ?.let(adapter::getModified)
                     ?: Long.MIN_VALUE
 
 }
