@@ -17,6 +17,6 @@ class FetcherKrate(private val krate: Krate, private val fetcher: Fetcher) {
 
     fun <T> put(key: String, value: T): Completable = krate.put(key, value)
 
-    fun <T> withKey(key: String): FetcherKeyKrate<T> = FetcherKeyKrate(krate, fetcher, key)
+    fun <T> with(key: String): FetcherKeyKrate<T> = FetcherKeyKrate(krate, fetcher, key)
 
 }

@@ -22,9 +22,9 @@ interface Krate {
 
     fun <T> put(key: String, value: T): Completable
 
-    fun <T> withKey(key: String) = KeyKrate<T>(this, key)
+    fun <T> with(key: String) = KeyKrate<T>(this, key)
 
-    fun withFetcher(fetcher: Fetcher) = FetcherKrate(this, fetcher)
+    fun with(fetcher: Fetcher) = FetcherKrate(this, fetcher)
 
     fun <T> with(fetcher: Fetcher, key: String) = FetcherKeyKrate<T>(this, fetcher, key)
 

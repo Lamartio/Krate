@@ -18,6 +18,6 @@ open class KeyKrate<T>(private val krate: Krate, private val key: String) {
 
     fun put(value: T): Completable = krate.put(key, value)
 
-    fun withFetcher(fetcher: Fetcher) = FetcherKeyKrate<T>(krate, fetcher, key)
+    fun with(fetcher: Fetcher) = FetcherKeyKrate<T>(krate, fetcher, key)
 
 }
