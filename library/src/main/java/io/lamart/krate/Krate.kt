@@ -1,9 +1,9 @@
 package io.lamart.krate
 
-import io.lamart.krate.utils.Fetcher
-import io.lamart.krate.utils.FetcherKeyKrate
-import io.lamart.krate.utils.FetcherKrate
-import io.lamart.krate.utils.KeyKrate
+import io.lamart.krate.helpers.Fetcher
+import io.lamart.krate.helpers.FetcherKrate
+import io.lamart.krate.helpers.KeyFetcherKrate
+import io.lamart.krate.helpers.KeyKrate
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Maybe
@@ -25,6 +25,6 @@ interface Krate {
 
     fun with(fetcher: Fetcher) = FetcherKrate(this, fetcher)
 
-    fun <T> with(fetcher: Fetcher, key: String) = FetcherKeyKrate<T>(this, fetcher, key)
+    fun <T> with(fetcher: Fetcher, key: String) = KeyFetcherKrate<T>(this, fetcher, key)
 
 }

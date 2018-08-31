@@ -1,11 +1,11 @@
-package io.lamart.krate.utils
+package io.lamart.krate.helpers
 
 import io.lamart.krate.Krate
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Maybe
 
-class FetcherKeyKrate<T>(
+class KeyFetcherKrate<T>(
         private val krate: Krate,
         private val fetcher: Fetcher,
         private val key: String

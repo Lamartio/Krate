@@ -1,4 +1,4 @@
-package io.lamart.krate.utils
+package io.lamart.krate.helpers
 
 import io.reactivex.Maybe
 import io.reactivex.Single

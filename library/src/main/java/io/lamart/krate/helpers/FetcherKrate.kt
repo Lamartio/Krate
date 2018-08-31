@@ -1,4 +1,4 @@
-package io.lamart.krate.utils
+package io.lamart.krate.helpers
 
 import io.lamart.krate.Krate
 import io.reactivex.Completable
@@ -17,6 +17,6 @@ class FetcherKrate(private val krate: Krate, private val fetcher: Fetcher) {
 
     fun <T> put(key: String, value: T): Completable = krate.put(key, value)
 
-    fun <T> with(key: String): FetcherKeyKrate<T> = FetcherKeyKrate(krate, fetcher, key)
+    fun <T> with(key: String): KeyFetcherKrate<T> = KeyFetcherKrate(krate, fetcher, key)
 
 }

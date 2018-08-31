@@ -1,4 +1,4 @@
-package io.lamart.krate.utils
+package io.lamart.krate.helpers
 
 import java.util.*
 
@@ -10,6 +10,7 @@ object Objects {
     val VALUE : Any = ArrayList<Any>().apply {
         add("abc")
         add(123)
+        add(Date(0))
     }
 
 }
