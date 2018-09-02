@@ -2,6 +2,7 @@ package io.lamart.krate.example
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.widget.Button
@@ -101,6 +102,7 @@ class ExampleActivity : AppCompatActivity() {
                     }
 
                     override fun onError(e: Throwable) {
+                        Log.e(this@ExampleActivity::class.java.name,"clicks", e)
                         clickButton?.isEnabled = true
                     }
 
