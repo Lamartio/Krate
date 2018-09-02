@@ -8,18 +8,18 @@ import java.io.OutputStream
 
 interface Serializer {
 
-    fun <T> OutputStream.write(value: T)
+    fun <T> write(output: OutputStream, value: T)
 
-    fun <T> InputStream.read(key: String): T
+    fun <T> read(input: InputStream): T
 
     open class Default : Serializer {
 
-        override fun <T> OutputStream.write(value: T) =
-                ObjectOutputStream(this).writeObject(value)
+        override fun <T> write(output: OutputStream, value: T) =
+                ObjectOutputStream(output).writeObject(value)
 
         @Suppress("UNCHECKED_CAST")
-        override fun <T> InputStream.read(key: String): T =
-                ObjectInputStream(this).readObject() as T
+        override fun <T> read(input: InputStream): T =
+                ObjectInputStream(input).readObject() as T
 
     }
 

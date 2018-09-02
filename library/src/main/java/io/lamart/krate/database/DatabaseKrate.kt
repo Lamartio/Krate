@@ -39,8 +39,8 @@ class DatabaseKrate(
                 query(key).takeIf { it.moveToFirst() }?.let { cursor ->
                     cursor.value
                             .let(::ByteArrayInputStream)
-                            .let(interceptor::read)
-                            .use { input -> serializer.run { input.read<T>(key) } }
+                            .let { interceptor.read(key, it) }
+                            .use { input -> serializer.read(input) }
                 }
             }
 
@@ -77,15 +77,15 @@ class DatabaseKrate(
             ContentValues(4).apply {
                 put(KEY, key)
                 put(MODIFIED, System.currentTimeMillis())
-                put(VALUE, serialize(value))
+                put(VALUE, serialize(key, value))
             }
 
-    private fun <T> serialize(value: T): ByteArray =
+    private fun <T> serialize(key: String, value: T): ByteArray =
             ByteArrayOutputStream()
                     .also {
-                        interceptor.write(it).let { output ->
+                        interceptor.write(key, it).let { output ->
                             try {
-                                serializer.run { output.write(value) }
+                                serializer.write(output, value)
                             } finally {
                                 output.flush()
                                 output.close()

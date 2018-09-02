@@ -5,15 +5,15 @@ import java.io.OutputStream
 
 interface Interceptor {
 
-    fun write(output: OutputStream): OutputStream
+    fun write(key: String, output: OutputStream): OutputStream
 
-    fun read(input: InputStream): InputStream
+    fun read(key: String, input: InputStream): InputStream
 
     object Default : Interceptor {
 
-        override fun write(output: OutputStream): OutputStream = output
+        override fun write(key: String, output: OutputStream): OutputStream = output
 
-        override fun read(input: InputStream): InputStream = input
+        override fun read(key: String, input: InputStream): InputStream = input
 
     }
 

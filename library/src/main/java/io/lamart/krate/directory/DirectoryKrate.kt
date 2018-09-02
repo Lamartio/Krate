@@ -21,8 +21,8 @@ class DirectoryKrate(
             Maybe.fromCallable {
                 directory.find(key)?.let { file ->
                     file.inputStream()
-                            .let(interceptor::read)
-                            .use { input -> serializer.run { input.read<T>(key) } }
+                            .let { interceptor.read(key, it) }
+                            .use { input -> serializer.read<T>(input) }
                 }
             }
 
@@ -49,10 +49,10 @@ class DirectoryKrate(
                         .let { File(directory, it) }
                         .apply { createNewFile() }
                         .outputStream()
-                        .let(interceptor::write)
+                        .let { interceptor.write(key, it) }
                         .let { output ->
                             try {
-                                serializer.run { output.write(value) }
+                                serializer.write(output, value)
                             } finally {
                                 output.flush()
                                 output.close()
