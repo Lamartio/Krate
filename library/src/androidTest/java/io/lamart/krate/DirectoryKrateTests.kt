@@ -10,7 +10,7 @@ import java.io.File
 
 
 @RunWith(AndroidJUnit4::class)
-class DirectoryKrateTests : KrateTests() {
+class DirectoryKrateTests : KrateTests(), KrateTestsSource {
 
     override lateinit var krate: Krate
 

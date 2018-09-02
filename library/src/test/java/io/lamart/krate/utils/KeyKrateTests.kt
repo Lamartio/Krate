@@ -1,12 +1,8 @@
 package io.lamart.krate.utils
 
 import io.lamart.krate.Krate
-import io.lamart.krate.helpers.DummyKrate
-import io.lamart.krate.helpers.Fetcher
-import io.lamart.krate.helpers.KeyFetcherKrate
-import io.lamart.krate.helpers.KeyKrate
-import io.lamart.krate.helpers.Objects.KEY
-import io.lamart.krate.helpers.Objects.VALUE
+import io.lamart.krate.utils.Objects.KEY
+import io.lamart.krate.utils.Objects.VALUE
 import io.reactivex.Maybe
 import io.reactivex.Single
 import org.hamcrest.core.IsInstanceOf

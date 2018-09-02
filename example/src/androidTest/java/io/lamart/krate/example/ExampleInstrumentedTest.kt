@@ -19,6 +19,6 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getTargetContext()
-        assertEquals("io.lamart.krate.example", appContext.packageName)
+        assertEquals("io.io.utils.krate.example", appContext.packageName)
     }
 }

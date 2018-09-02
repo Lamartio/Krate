@@ -1,7 +1,7 @@
-package io.lamart.krate.helpers
+package io.lamart.krate.utils
 
 import io.lamart.krate.Krate
-import io.lamart.krate.helpers.Objects.VALUE
+import io.lamart.krate.utils.Objects.VALUE
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Maybe

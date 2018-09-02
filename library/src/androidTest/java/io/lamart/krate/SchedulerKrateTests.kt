@@ -2,9 +2,8 @@ package io.lamart.krate
 
 import android.support.test.InstrumentationRegistry
 import io.lamart.krate.directory.DirectoryKrate
-import io.lamart.krate.helpers.KrateTestsSource
-import io.lamart.krate.helpers.Objects.KEY
-import io.lamart.krate.helpers.Objects.VALUE
+import io.lamart.krate.utils.Objects.KEY
+import io.lamart.krate.utils.Objects.VALUE
 import io.reactivex.Maybe
 import io.reactivex.Single
 import io.reactivex.schedulers.TestScheduler

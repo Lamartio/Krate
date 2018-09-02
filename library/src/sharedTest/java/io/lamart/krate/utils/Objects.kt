@@ -1,4 +1,4 @@
-package io.lamart.krate.helpers
+package io.lamart.krate.utils
 
 import java.util.*
 

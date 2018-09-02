@@ -1,12 +1,9 @@
 package io.lamart.krate.utils
 
+import io.lamart.DummyFetcher
 import io.lamart.krate.Krate
-import io.lamart.krate.helpers.DummyFetcher
-import io.lamart.krate.helpers.DummyKrate
-import io.lamart.krate.helpers.Fetcher
-import io.lamart.krate.helpers.KeyFetcherKrate
-import io.lamart.krate.helpers.Objects.KEY
-import io.lamart.krate.helpers.Objects.VALUE
+import io.lamart.krate.utils.Objects.KEY
+import io.lamart.krate.utils.Objects.VALUE
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito.spy

@@ -7,7 +7,7 @@ android {
 
 
     defaultConfig {
-        applicationId "io.lamart.krate.example"
+        applicationId "io.io.utils.krate.example"
         minSdkVersion 14
         targetSdkVersion 28
         versionCode 1

@@ -1,9 +1,9 @@
 package io.lamart.krate
 
-import io.lamart.krate.helpers.Fetcher
-import io.lamart.krate.helpers.FetcherKrate
-import io.lamart.krate.helpers.KeyFetcherKrate
-import io.lamart.krate.helpers.KeyKrate
+import io.lamart.krate.utils.Fetcher
+import io.lamart.krate.utils.FetcherKrate
+import io.lamart.krate.utils.KeyFetcherKrate
+import io.lamart.krate.utils.KeyKrate
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Maybe

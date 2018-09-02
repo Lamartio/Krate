@@ -9,7 +9,7 @@ import org.junit.runner.RunWith
 
 
 @RunWith(AndroidJUnit4::class)
-class DatabaseKrateTests : KrateTests() {
+class DatabaseKrateTests : KrateTests(), KrateTestsSource {
 
     lateinit var database: SQLiteDatabase
     override lateinit var krate: Krate

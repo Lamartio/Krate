@@ -1,9 +1,9 @@
 package io.lamart.krate.utils
 
+import io.lamart.DummyFetcher
 import io.lamart.krate.Krate
-import io.lamart.krate.helpers.*
-import io.lamart.krate.helpers.Objects.KEY
-import io.lamart.krate.helpers.Objects.VALUE
+import io.lamart.krate.utils.Objects.KEY
+import io.lamart.krate.utils.Objects.VALUE
 import org.hamcrest.core.IsInstanceOf
 import org.junit.Assert.assertThat
 import org.junit.Before
@@ -16,42 +16,42 @@ class FetcherKrateTests {
 
     private lateinit var krate: Krate
     private lateinit var fetcher: Fetcher
-    private lateinit var keyKrate: FetcherKrate
+    private lateinit var fetcherKrate: FetcherKrate
 
     @Before
     fun before() {
         krate = spy(DummyKrate())
         fetcher = spy(DummyFetcher())
-        keyKrate = krate.with(fetcher)
+        fetcherKrate = FetcherKrate(krate, fetcher)
     }
 
     @Test
     fun put() {
-        keyKrate.put(KEY, VALUE).test().assertNoErrors().assertComplete()
+        fetcherKrate.put(KEY, VALUE).test().assertNoErrors().assertComplete()
         verify(krate).put(KEY, VALUE)
     }
 
     @Test
     fun get() {
-        keyKrate.get<Any>(KEY).test().assertNoErrors().assertComplete()
+        fetcherKrate.get<Any>(KEY).test().assertNoErrors().assertComplete()
         verify(krate).get<Any>(KEY)
     }
 
     @Test
     fun remove() {
-        keyKrate.remove(KEY).test().assertNoErrors().assertComplete()
+        fetcherKrate.remove(KEY).test().assertNoErrors().assertComplete()
         verify(krate).remove(KEY)
     }
 
     @Test
     fun getAndFetch() {
-        keyKrate.getAndFetch<Any>(KEY).test().assertNoErrors().assertComplete()
+        fetcherKrate.getAndFetch<Any>(KEY).test().assertValueCount(2).assertNoErrors().assertComplete()
         verify(fetcher).fetch<Any>(KEY)
     }
 
     @Test
     fun getOrFetch() {
-        keyKrate.getOrFetch<Any>(KEY).test().assertNoErrors().assertComplete()
+        fetcherKrate.getOrFetch<Any>(KEY).test().assertNoErrors().assertComplete()
         verify(fetcher).fetch<Any>(KEY, Long.MIN_VALUE)
     }
 
@@ -59,7 +59,7 @@ class FetcherKrateTests {
     @Test
     fun with() {
         assertThat(
-                keyKrate.with<Any>(KEY),
+                fetcherKrate.with<Any>(KEY),
                 IsInstanceOf(KeyFetcherKrate::class.java)
         )
     }
