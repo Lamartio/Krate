@@ -9,6 +9,7 @@ import io.lamart.krate.Serializer
 import io.lamart.krate.database.Constants.Companion.KEY
 import io.lamart.krate.database.Constants.Companion.MODIFIED
 import io.lamart.krate.database.Constants.Companion.VALUE
+import io.lamart.krate.utils.use
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Maybe
@@ -36,12 +37,11 @@ class DatabaseKrate(
 
     override fun <T> get(key: String): Maybe<T> =
             Maybe.fromCallable<T> {
-                query(key).takeIf { it.moveToFirst() }?.let { cursor ->
-                    cursor.value
-                            .let(::ByteArrayInputStream)
-                            .let { interceptor.read(key, it) }
-                            .use { input -> serializer.read(input) }
-                }
+                query(key).takeIf { it.moveToFirst() }
+                        ?.value
+                        ?.let(::ByteArrayInputStream)
+                        ?.let { interceptor.read(key, it) }
+                        ?.use(serializer::read)
             }
 
     override fun <T> getAndFetch(key: String, fetch: () -> Single<T>): Flowable<T> =
@@ -83,14 +83,7 @@ class DatabaseKrate(
     private fun <T> serialize(key: String, value: T): ByteArray =
             ByteArrayOutputStream()
                     .also {
-                        interceptor.write(key, it).let { output ->
-                            try {
-                                serializer.write(output, value)
-                            } finally {
-                                output.flush()
-                                output.close()
-                            }
-                        }
+                        interceptor.write(key, it).use { serializer.write(it, value) }
                     }
                     .toByteArray()
 

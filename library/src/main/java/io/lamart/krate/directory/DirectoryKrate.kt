@@ -3,11 +3,13 @@ package io.lamart.krate.directory
 import io.lamart.krate.Interceptor
 import io.lamart.krate.Krate
 import io.lamart.krate.Serializer
+import io.lamart.krate.utils.use
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Maybe
 import io.reactivex.Single
 import java.io.File
+import java.io.InputStream
 
 @Suppress("MoveLambdaOutsideParentheses")
 class DirectoryKrate(
@@ -19,11 +21,10 @@ class DirectoryKrate(
 
     override fun <T> get(key: String): Maybe<T> =
             Maybe.fromCallable {
-                directory.find(key)?.let { file ->
-                    file.inputStream()
-                            .let { interceptor.read(key, it) }
-                            .use { input -> serializer.read<T>(input) }
-                }
+                directory.find(key)
+                        ?.inputStream()
+                        ?.let { interceptor.read(key, it) }
+                        ?.use<InputStream, T>(serializer::read)
             }
 
     override fun <T> getAndFetch(key: String, fetch: () -> Single<T>): Flowable<T> =
@@ -50,14 +51,7 @@ class DirectoryKrate(
                         .apply { createNewFile() }
                         .outputStream()
                         .let { interceptor.write(key, it) }
-                        .let { output ->
-                            try {
-                                serializer.write(output, value)
-                            } finally {
-                                output.flush()
-                                output.close()
-                            }
-                        }
+                        .use { serializer.write(it, value) }
             }
 
     private fun File.find(key: String): File? =
