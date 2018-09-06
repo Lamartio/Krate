@@ -1,14 +1,19 @@
 package io.lamart.krate
 
 import android.database.sqlite.SQLiteDatabase
-import android.support.test.runner.AndroidJUnit4
+import android.os.Build
 import io.lamart.krate.database.DatabaseKrate
+import io.lamart.krate.helpers.DummySQLiteOpenHelper
 import org.junit.After
 import org.junit.Before
 import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.RuntimeEnvironment
+import org.robolectric.annotation.Config
 
 
-@RunWith(AndroidJUnit4::class)
+@Config(sdk = [Build.VERSION_CODES.JELLY_BEAN_MR2])
+@RunWith(RobolectricTestRunner::class)
 class DatabaseKrateTests : KrateTests(), KrateTestsSource {
 
     lateinit var database: SQLiteDatabase
@@ -16,13 +21,8 @@ class DatabaseKrateTests : KrateTests(), KrateTestsSource {
 
     @Before
     fun before() {
-        database = SQLiteDatabase.OpenParams
-                .Builder()
-                .build()
-                .let(SQLiteDatabase::createInMemory)
-        krate = database
-                .let { DatabaseKrate(it) }
-                .createTableIfNotExists()
+        database = RuntimeEnvironment.application.let(::DummySQLiteOpenHelper).writableDatabase
+        krate = DatabaseKrate(database)
     }
 
     @After
@@ -31,3 +31,4 @@ class DatabaseKrateTests : KrateTests(), KrateTestsSource {
     }
 
 }
+

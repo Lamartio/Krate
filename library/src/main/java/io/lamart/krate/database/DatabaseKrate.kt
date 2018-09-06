@@ -24,7 +24,7 @@ class DatabaseKrate(
         private val interceptor: Interceptor = Interceptor.Default
 ) : Krate, Constants {
 
-    fun createTableIfNotExists(): DatabaseKrate = apply {
+    init {
         database.execSQL(
                 "CREATE TABLE IF NOT EXISTS $tableName (" +
                         "$KEY TEXT UNIQUE PRIMARY KEY NOT NULL," +
