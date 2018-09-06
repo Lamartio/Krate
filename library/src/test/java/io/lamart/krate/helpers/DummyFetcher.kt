@@ -1,7 +1,7 @@
 package io.lamart
 
 import io.lamart.krate.utils.Fetcher
-import io.lamart.krate.utils.Objects
+import io.lamart.krate.helpers.Objects
 import io.reactivex.Maybe
 import io.reactivex.Single
 

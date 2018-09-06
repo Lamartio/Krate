@@ -2,8 +2,9 @@ package io.lamart.krate.utils
 
 import io.lamart.DummyFetcher
 import io.lamart.krate.Krate
-import io.lamart.krate.utils.Objects.KEY
-import io.lamart.krate.utils.Objects.VALUE
+import io.lamart.krate.helpers.DummyKrate
+import io.lamart.krate.helpers.Objects.KEY
+import io.lamart.krate.helpers.Objects.VALUE
 import org.hamcrest.core.IsInstanceOf
 import org.junit.Assert.assertThat
 import org.junit.Before
@@ -45,7 +46,7 @@ class FetcherKrateTests {
 
     @Test
     fun getAndFetch() {
-        fetcherKrate.getAndFetch<Any>(KEY).test().assertValueCount(2).assertNoErrors().assertComplete()
+        fetcherKrate.getAndFetch<Any>(KEY).test().assertValueCount(1).assertNoErrors().assertComplete()
         verify(fetcher).fetch<Any>(KEY)
     }
 
