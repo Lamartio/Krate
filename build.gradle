@@ -1,7 +1,7 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-    ext.kotlin_version = '1.2.51'
+    ext.kotlin_version = '1.2.61'
     repositories {
         google()
         jcenter()
@@ -19,6 +19,13 @@ allprojects {
     repositories {
         google()
         jcenter()
+    }
+    // https://github.com/FarbodSalamat-Zadeh/UsefulViews/commit/e73495caae344ddf08f3be88bc7a620f5dfdf1be
+    // https://github.com/novoda/bintray-release/issues/71
+    tasks.withType(Javadoc) {
+        excludes = ['**/*.kt']
+//        options.addStringOption('Xdoclint:none', '-quiet')
+//        options.addStringOption('encoding', 'UTF-8')
     }
 }
 

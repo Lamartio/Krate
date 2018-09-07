@@ -1,5 +1,41 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.github.dcendents:android-maven-gradle-plugin:2.0'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.0'
+    }
+}
+
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
+apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'com.jfrog.bintray'
+
+ext {
+    bintrayRepo = 'Krate'
+    bintrayName = 'Krate'
+
+    publishedGroupId = 'io.lamart.krate'
+    libraryName = 'Krate'
+    artifact = 'krate'
+
+    libraryDescription = 'Simple storage and network layer for Android.'
+
+    siteUrl = 'https://github.com/Lamartio/Krate/'
+    gitUrl = 'https://github.com/Lamartio/Krate.git'
+
+    libraryVersion = '0.9.0'
+
+    developerId = 'Lamartio'
+    developerName = 'Danny Lamarti'
+    developerEmail = ''
+
+    licenseName = 'MIT'
+    licenseUrl = 'https://opensource.org/licenses/MIT'
+    allLicenses = ["MIT"]
+}
 
 android {
     compileSdkVersion 28
@@ -32,5 +68,6 @@ dependencies {
     testImplementation 'org.mockito:mockito-android:2.21.0'
     testImplementation 'org.mockito:mockito-core:2.21.0'
     testImplementation "org.robolectric:robolectric:3.8"
-
 }
+
+apply from: './publish.gradle'

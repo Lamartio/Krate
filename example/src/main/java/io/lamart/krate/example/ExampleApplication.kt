@@ -12,19 +12,19 @@ import io.reactivex.schedulers.Schedulers
 
 class ExampleApplication : Application() {
 
+    @Suppress("ReplaceSingleLineLet")
     val krate: Krate by lazy {
         "example_database"
                 .let(::getDatabasePath)
                 .apply { createNewFile() }
                 .let { SQLiteDatabase.openOrCreateDatabase(it, null) }
                 .let { DatabaseKrate(database = it, interceptor = ConcealInterceptor(this)) }
-                .createTableIfNotExists()
                 .let { SchedulerKrate(krate = it, ioScheduler = Schedulers.io(), resultScheduler = AndroidSchedulers.mainThread()) }
     }
 
     override fun onCreate() {
         super.onCreate()
-        SoLoader.init(this, false);
+        SoLoader.init(this, false)
     }
 
 }

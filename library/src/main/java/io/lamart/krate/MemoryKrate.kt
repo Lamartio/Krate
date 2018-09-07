@@ -11,6 +11,7 @@ class MemoryKrate() : Krate {
     private val lock = Any()
     private val map = mutableMapOf<String, Pair<Long, Any>>()
 
+    @Suppress("UNCHECKED_CAST")
     override fun <T> get(key: String): Maybe<T> =
             Maybe.fromCallable {
                 synchronized(lock) { map[key]?.second as T }
