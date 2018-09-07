@@ -6,7 +6,7 @@ import io.reactivex.Maybe
 import io.reactivex.Single
 
 
-class MemoryKrate() : Krate {
+class MemoryKrate : Krate {
 
     private val lock = Any()
     private val map = mutableMapOf<String, Pair<Long, Any>>()
