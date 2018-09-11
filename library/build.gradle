@@ -70,4 +70,4 @@ dependencies {
     testImplementation "org.robolectric:robolectric:3.8"
 }
 
-apply from: 'publish.gradle'
+apply from: 'upload.gradle'
