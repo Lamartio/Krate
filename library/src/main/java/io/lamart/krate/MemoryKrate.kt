@@ -6,11 +6,14 @@ import io.reactivex.Maybe
 import io.reactivex.Single
 import io.reactivex.processors.PublishProcessor
 
+/**
+ * An in-memory implementation of a Krate. The data is kept in a Map<String, Pair<Long, *>> and is kept synchronized by a private lock.
+ */
 
 class MemoryKrate : Krate {
 
     private val lock = Any()
-    private val map = mutableMapOf<String, Pair<Long, Any>>()
+    private val map = mutableMapOf<String, Pair<Long, *>>()
     private val processor = PublishProcessor.create<String>()
 
     override fun getKeys(): Single<Collection<String>> =

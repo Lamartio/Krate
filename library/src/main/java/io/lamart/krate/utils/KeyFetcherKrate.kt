@@ -5,6 +5,10 @@ import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Maybe
 
+/**
+ * An utility Krate that has a predefined key and networking operations.
+ */
+
 class KeyFetcherKrate<T>(val krate: Krate, val fetcher: Fetcher, val key: String) {
 
     fun getModified() =

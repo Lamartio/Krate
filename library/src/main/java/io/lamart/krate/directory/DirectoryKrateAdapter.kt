@@ -2,21 +2,30 @@ package io.lamart.krate.directory
 
 interface DirectoryKrateAdapter {
 
-    fun String.containsKey(key: String): Boolean
 
     /**
-     * The result will function as the file name.
+     * Metadata that is associated with the value must be encoded in a single String. This will function as the file's name and must be unique and respect the file name conventions.
      */
 
     fun encode(key: String, modified: Long): String
 
+    /**
+     * This function must retrieve the key associated with the value from the encoded name.
+     */
+
     fun getKey(name: String): String
+
+    /**
+     * This function must retrieve the modified date from the encoded name.
+     */
 
     fun getModified(name: String): Long
 
-    open class Default(protected val separator: String = " ") : DirectoryKrateAdapter {
+    /**
+     * A default implementation that uses a predefined seperator to seperate the key from the modfied date.
+     */
 
-        override fun String.containsKey(key: String): Boolean = startsWith("$key$separator")
+    open class Default(protected val separator: String = " ") : DirectoryKrateAdapter {
 
         override fun encode(key: String, modified: Long): String =
                 "$key$separator$modified"

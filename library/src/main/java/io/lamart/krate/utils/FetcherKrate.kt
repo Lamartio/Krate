@@ -6,6 +6,10 @@ import io.reactivex.Flowable
 import io.reactivex.Maybe
 import io.reactivex.Single
 
+/**
+ * An utility Krate that has predefined networking operations.
+ */
+
 class FetcherKrate(val krate: Krate, val fetcher: Fetcher) {
 
     fun getKeys(): Single<Collection<String>> = krate.getKeys()

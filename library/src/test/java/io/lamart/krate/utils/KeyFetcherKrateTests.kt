@@ -21,7 +21,7 @@ class KeyFetcherKrateTests {
     fun before() {
         krate = spy(DummyKrate())
         fetcher = spy(DummyFetcher())
-        keyFetcherKrate = krate.with(fetcher, KEY)
+        keyFetcherKrate = krate.with(KEY, fetcher)
     }
 
     @Test

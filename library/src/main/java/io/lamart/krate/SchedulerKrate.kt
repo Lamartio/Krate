@@ -3,6 +3,16 @@ package io.lamart.krate
 import io.reactivex.*
 import io.reactivex.schedulers.Schedulers
 
+/**
+ * A wrapper around a Krate that gives control over the thread a certain operation is being executed on.
+ *
+ * The default value for any scheduler will proceed the operation on the current scheduler.
+ *
+ * @param ioScheduler Is used for all persistent operations.
+ * @param networkScheduler Is used for all fetching operations.
+ * @param resultScheduler Is used for presenting the result of any operation.
+ *
+ */
 
 @Suppress("MoveLambdaOutsideParentheses")
 class SchedulerKrate(

@@ -172,7 +172,7 @@ abstract class KrateTests : KrateTestsSource {
     @Test
     fun withKeyFetcher() {
         assertThat(
-                krate.with<Any>(Mockito.mock(Fetcher::class.java), KEY),
+                krate.with<Any>(KEY, Mockito.mock(Fetcher::class.java)),
                 IsInstanceOf(KeyFetcherKrate::class.java)
         )
     }

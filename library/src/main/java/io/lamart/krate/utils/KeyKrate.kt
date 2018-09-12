@@ -6,6 +6,10 @@ import io.reactivex.Flowable
 import io.reactivex.Maybe
 import io.reactivex.Single
 
+/**
+ * An utility Krate that has a predefined key.
+ */
+
 class KeyKrate<T>(val krate: Krate, val key: String) {
 
     fun getModified() =

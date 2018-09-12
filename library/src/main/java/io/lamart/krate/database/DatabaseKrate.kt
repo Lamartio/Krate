@@ -18,6 +18,14 @@ import io.reactivex.processors.PublishProcessor
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 
+/**
+ * This Krate is associated with a database. It will create one table, if it does not exists, that contains a column for the key, value and modified time.
+ *
+ * @param tableName The table name that will be used as a name for the single table.
+ * @param serializer Serializes and deserializes values to and from bytes respectively.
+ * @param interceptor Optionally manipulates the bytes.
+ */
+
 class DatabaseKrate(
         private val database: SQLiteDatabase,
         private val tableName: String = "krate_data",
@@ -60,7 +68,7 @@ class DatabaseKrate(
                         ?.value
                         ?.let(::ByteArrayInputStream)
                         ?.let { interceptor.read(key, it) }
-                        ?.use(serializer::read)
+                        ?.use { serializer.read(key, it) }
             }
 
     override fun <T> getAndFetch(key: String, fetch: () -> Single<T>): Flowable<T> =
@@ -106,7 +114,7 @@ class DatabaseKrate(
                     .also { output ->
                         interceptor
                                 .write(key, output)
-                                .use { serializer.write(it, value) }
+                                .use { serializer.write(key, value, it) }
                     }
                     .toByteArray()
 

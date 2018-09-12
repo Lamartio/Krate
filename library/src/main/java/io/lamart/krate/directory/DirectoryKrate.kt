@@ -12,6 +12,17 @@ import io.reactivex.processors.PublishProcessor
 import java.io.File
 import java.io.InputStream
 
+/**
+ * This Krate assumes that it is given a existing directory in which it can store each value in its own file.
+ *
+ * NOTE: You are responsible for serving a File that is a created directory.
+ *
+ * @param directory The directory where all the values will be stored in.
+ * @param serializer Serializes and deserializes values to and from bytes respectively.
+ * @param interceptor Optionally manipulates the bytes.
+ * @param adapter Is responsible for creating proper filenames.
+ */
+
 @Suppress("MoveLambdaOutsideParentheses")
 class DirectoryKrate(
         private val directory: File,
@@ -43,7 +54,7 @@ class DirectoryKrate(
                 directory.find(key)
                         ?.inputStream()
                         ?.let { interceptor.read(key, it) }
-                        ?.use<InputStream, T>(serializer::read)
+                        ?.use<InputStream, T>{ serializer.read(key, it) }
             }
 
     override fun <T> getAndFetch(key: String, fetch: () -> Single<T>): Flowable<T> =
@@ -70,12 +81,12 @@ class DirectoryKrate(
                                 .apply { createNewFile() }
                                 .outputStream()
                                 .let { interceptor.write(key, it) }
-                                .use { serializer.write(it, value) }
+                                .use { serializer.write(key, value, it) }
                     }
                     .doOnComplete { processor.onNext(key) }
 
     private fun File.find(key: String): File? =
-            listFiles({ _, name -> adapter.run { name.containsKey(key) } }).firstOrNull()
+            listFiles({ _, name -> adapter.getKey(name) == key }).firstOrNull()
 
     private fun getModified(key: String) =
             directory
