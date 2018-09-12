@@ -1,16 +1,15 @@
 package io.lamart.krate
 
+import io.lamart.krate.helpers.Objects.KEY
+import io.lamart.krate.helpers.Objects.VALUE
 import io.lamart.krate.utils.Fetcher
 import io.lamart.krate.utils.FetcherKrate
 import io.lamart.krate.utils.KeyFetcherKrate
 import io.lamart.krate.utils.KeyKrate
-import io.lamart.krate.helpers.Objects.KEY
-import io.lamart.krate.helpers.Objects.VALUE
 import io.reactivex.Maybe
 import io.reactivex.Single
 import org.hamcrest.core.IsInstanceOf
 import org.junit.Assert.assertThat
-import org.junit.Ignore
 import org.junit.Test
 import org.mockito.Mockito
 
@@ -20,10 +19,49 @@ import org.mockito.Mockito
  *
  * See [testing documentation](http://d.android.com/tools/testing).
  */
-@Ignore
 abstract class KrateTests : KrateTestsSource {
 
     abstract var krate: Krate
+
+    @Test
+    override fun observe() {
+        val observer = krate.observe().test()
+
+        krate.put(KEY, VALUE)
+                .test()
+                .assertComplete()
+                .assertNoErrors()
+        observer
+                .assertNotComplete()
+                .assertNoErrors()
+                .assertValueCount(1)
+    }
+
+    @Test
+    override fun getKeys() {
+        krate.put(KEY, VALUE)
+                .test()
+                .assertComplete()
+                .assertNoErrors()
+        krate.getKeys()
+                .test()
+                .assertComplete()
+                .assertNoErrors()
+                .assertValue { it.first() == KEY }
+    }
+
+    @Test
+    override fun getModifieds() {
+        krate.put(KEY, VALUE)
+                .test()
+                .assertComplete()
+                .assertNoErrors()
+        krate.getModifieds()
+                .test()
+                .assertComplete()
+                .assertNoErrors()
+                .assertValue { it[KEY] != null }
+    }
 
     @Test
     override fun put() {

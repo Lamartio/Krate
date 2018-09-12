@@ -10,7 +10,16 @@ class SchedulerKrate(
         private val ioScheduler: Scheduler = Schedulers.trampoline(),
         private val networkScheduler: Scheduler = Schedulers.trampoline(),
         private val resultScheduler: Scheduler = Schedulers.trampoline()
-) : Krate {
+) : Krate by krate {
+
+    override fun getKeys(): Single<Collection<String>> =
+            krate.getKeys().schedule()
+
+    override fun getModifieds(): Single<Map<String, Long>> =
+            krate.getModifieds().subscribeOn(ioScheduler)
+
+    override fun observe(): Flowable<String> =
+            krate.observe().schedule()
 
     override fun <T> get(key: String): Maybe<T> =
             krate.get<T>(key).schedule()
@@ -32,6 +41,9 @@ class SchedulerKrate(
             compose { it.subscribeOn(ioScheduler).observeOn(resultScheduler) }
 
     private fun <T> Maybe<T>.schedule() =
+            compose { it.subscribeOn(ioScheduler).observeOn(resultScheduler) }
+
+    private fun <T> Single<T>.schedule() =
             compose { it.subscribeOn(ioScheduler).observeOn(resultScheduler) }
 
 }

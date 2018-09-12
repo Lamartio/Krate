@@ -7,9 +7,23 @@ import io.reactivex.Maybe
 import io.reactivex.Single
 
 
-open class DummyKrate(private val value: Any? = null) : Krate {
+open class DummyKrate(private val pair: Pair<String, Any?>? = null) : Krate {
 
-    override fun <T> get(key: String): Maybe<T> = Maybe.fromCallable { value as? T }
+    override fun getKeys(): Single<Collection<String>> =
+            Single.fromCallable<Collection<String>> {
+                pair?.first?.let { listOf(it) } ?: emptyList()
+            }
+
+    override fun getModifieds(): Single<Map<String, Long>> =
+            Single.fromCallable<Map<String, Long>> {
+                pair?.first?.let { mapOf(it to Long.MIN_VALUE) } ?: emptyMap()
+            }
+
+    override fun observe(): Flowable<String> =
+            pair?.first?.let { Flowable.just(it) } ?: Flowable.empty()
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <T> get(key: String): Maybe<T> = Maybe.fromCallable { pair?.second as? T }
 
     override fun <T> getAndFetch(key: String, fetch: () -> Single<T>): Flowable<T> =
             Maybe.concat(

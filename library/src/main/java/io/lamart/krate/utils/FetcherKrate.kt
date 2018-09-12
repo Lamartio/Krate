@@ -4,8 +4,15 @@ import io.lamart.krate.Krate
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Maybe
+import io.reactivex.Single
 
-class FetcherKrate(private val krate: Krate, private val fetcher: Fetcher) {
+class FetcherKrate(val krate: Krate, val fetcher: Fetcher) {
+
+    fun getKeys(): Single<Collection<String>> = krate.getKeys()
+
+    fun getModifieds(): Single<Map<String, Long>> = krate.getModifieds()
+
+    fun observe(): Flowable<String> = krate.observe()
 
     fun <T> get(key: String): Maybe<T> = krate.get(key)
 

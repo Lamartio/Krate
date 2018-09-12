@@ -21,7 +21,7 @@ class SchedulerKrateTests : KrateTestsSource {
     @Before
     fun setup() {
         valueKrate = SchedulerKrate(
-                DummyKrate(VALUE),
+                DummyKrate(KEY to VALUE),
                 ioScheduler,
                 networkScheduler,
                 resultScheduler
@@ -32,6 +32,41 @@ class SchedulerKrateTests : KrateTestsSource {
                 networkScheduler,
                 resultScheduler
         )
+    }
+
+    @Test
+    override fun observe() {
+        valueKrate.observe().test().apply {
+            assertValueCount(0)
+            ioScheduler.triggerActions()
+            resultScheduler.triggerActions()
+            assertValueCount(1)
+            assertNoErrors()
+        }
+    }
+
+    @Test
+    override fun getKeys() {
+        valueKrate.getKeys().test().apply {
+            assertNotComplete()
+            ioScheduler.triggerActions()
+            resultScheduler.triggerActions()
+            assertValueCount(1)
+            assertNoErrors()
+            assertComplete()
+        }
+    }
+
+    @Test
+    override fun getModifieds() {
+        valueKrate.getModifieds().test().apply {
+            assertNotComplete()
+            ioScheduler.triggerActions()
+            resultScheduler.triggerActions()
+            assertValueCount(1)
+            assertNoErrors()
+            assertComplete()
+        }
     }
 
     @Test

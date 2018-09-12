@@ -3,6 +3,12 @@ package io.lamart.krate
 
 interface KrateTestsSource {
 
+    fun observe()
+
+    fun getKeys()
+
+    fun getModifieds()
+
     fun put()
 
     fun get()

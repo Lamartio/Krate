@@ -27,6 +27,18 @@ class KeyKrateTests {
     }
 
     @Test
+    fun observe() {
+        keyKrate.observe().test().assertNoErrors().assertComplete()
+        verify(krate).observe()
+    }
+
+    @Test
+    fun getModified() {
+        keyKrate.getModified().test().assertNoErrors().assertComplete()
+        verify(krate).getModifieds()
+    }
+
+    @Test
     fun put() {
         keyKrate.put(VALUE).test().assertNoErrors().assertComplete()
         verify(krate).put(KEY, VALUE)

@@ -14,6 +14,7 @@ import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Maybe
 import io.reactivex.Single
+import io.reactivex.processors.PublishProcessor
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 
@@ -23,6 +24,8 @@ class DatabaseKrate(
         private val serializer: Serializer = Serializer.Default(),
         private val interceptor: Interceptor = Interceptor.Default
 ) : Krate, Constants {
+
+    private val processor = PublishProcessor.create<String>()
 
     init {
         database.execSQL(
@@ -34,6 +37,22 @@ class DatabaseKrate(
                         "CREATE UNIQUE INDEX IF NOT EXISTS ${tableName}_${KEY}_index ON $tableName ($KEY);"
         )
     }
+
+    override fun getKeys(): Single<Collection<String>> =
+            Single.fromCallable {
+                query(arrayOf(KEY)).use { cursor ->
+                    cursor.map { it.key }
+                }
+            }
+
+    override fun getModifieds(): Single<Map<String, Long>> =
+            Single.fromCallable {
+                query(arrayOf(KEY, MODIFIED)).use { cursor ->
+                    cursor.map { it.key to it.modified }.toMap()
+                }
+            }
+
+    override fun observe(): Flowable<String> = processor
 
     override fun <T> get(key: String): Maybe<T> =
             Maybe.fromCallable<T> {
@@ -64,14 +83,16 @@ class DatabaseKrate(
             }
 
     override fun <T> put(key: String, value: T): Completable =
-            Completable.fromAction {
-                database.insertWithOnConflict(
-                        tableName,
-                        KEY,
-                        getValues(key, value),
-                        SQLiteDatabase.CONFLICT_REPLACE
-                )
-            }
+            Completable
+                    .fromAction {
+                        database.insertWithOnConflict(
+                                tableName,
+                                KEY,
+                                getValues(key, value),
+                                SQLiteDatabase.CONFLICT_REPLACE
+                        )
+                    }
+                    .doOnComplete { processor.onNext(key) }
 
     private fun <T> getValues(key: String, value: T): ContentValues =
             ContentValues(4).apply {
@@ -82,8 +103,10 @@ class DatabaseKrate(
 
     private fun <T> serialize(key: String, value: T): ByteArray =
             ByteArrayOutputStream()
-                    .also {
-                        interceptor.write(key, it).use { serializer.write(it, value) }
+                    .also { output ->
+                        interceptor
+                                .write(key, output)
+                                .use { serializer.write(it, value) }
                     }
                     .toByteArray()
 
@@ -95,6 +118,20 @@ class DatabaseKrate(
                     columns,
                     "$KEY == ?",
                     arrayOf(key),
+                    null,
+                    null,
+                    null,
+                    null
+            ) as KrateCursor
+
+    private fun query(columns: Array<String>? = null): KrateCursor =
+            database.queryWithFactory(
+                    { _, driver, editTable, query -> SQLiteCursor(driver, editTable, query).let(::KrateCursor) },
+                    false,
+                    tableName,
+                    columns,
+                    null,
+                    null,
                     null,
                     null,
                     null,

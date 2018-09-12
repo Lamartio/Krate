@@ -5,11 +5,16 @@ import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Maybe
 
-class KeyFetcherKrate<T>(
-        private val krate: Krate,
-        private val fetcher: Fetcher,
-        private val key: String
-) {
+class KeyFetcherKrate<T>(val krate: Krate, val fetcher: Fetcher, val key: String) {
+
+    fun getModified() =
+            krate.getModifieds().flatMapMaybe { modifieds ->
+                Maybe.fromCallable<Long> {
+                    modifieds[key]
+                }
+            }
+
+    fun observe(): Flowable<String> = krate.observe().filter { it == key }
 
     fun get(): Maybe<T> = krate.get(key)
 

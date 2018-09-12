@@ -27,6 +27,24 @@ class FetcherKrateTests {
     }
 
     @Test
+    fun observe() {
+        fetcherKrate.observe().test().assertNoErrors().assertComplete()
+        verify(krate).observe()
+    }
+
+    @Test
+    fun getKeys() {
+        fetcherKrate.getKeys().test().assertNoErrors().assertComplete()
+        verify(krate).getKeys()
+    }
+
+    @Test
+    fun getModifieds() {
+        fetcherKrate.getModifieds().test().assertNoErrors().assertComplete()
+        verify(krate).getModifieds()
+    }
+
+    @Test
     fun put() {
         fetcherKrate.put(KEY, VALUE).test().assertNoErrors().assertComplete()
         verify(krate).put(KEY, VALUE)
@@ -47,12 +65,14 @@ class FetcherKrateTests {
     @Test
     fun getAndFetch() {
         fetcherKrate.getAndFetch<Any>(KEY).test().assertValueCount(1).assertNoErrors().assertComplete()
+        verify(krate).get<Any>(KEY)
         verify(fetcher).fetch<Any>(KEY)
     }
 
     @Test
     fun getOrFetch() {
         fetcherKrate.getOrFetch<Any>(KEY).test().assertNoErrors().assertComplete()
+        verify(krate).get<Any>(KEY)
         verify(fetcher).fetch<Any>(KEY, Long.MIN_VALUE)
     }
 

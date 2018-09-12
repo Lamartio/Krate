@@ -8,6 +8,7 @@ import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Maybe
 import io.reactivex.Single
+import io.reactivex.processors.PublishProcessor
 import java.io.File
 import java.io.InputStream
 
@@ -18,6 +19,24 @@ class DirectoryKrate(
         private val interceptor: Interceptor = Interceptor.Default,
         private val adapter: DirectoryKrateAdapter = DirectoryKrateAdapter.Default()
 ) : Krate {
+
+    private val processor = PublishProcessor.create<String>()
+
+    override fun getKeys(): Single<Collection<String>> =
+            Single.fromCallable {
+                directory.list().map(adapter::getKey)
+            }
+
+    override fun getModifieds(): Single<Map<String, Long>> =
+            Single.fromCallable {
+                directory
+                        .list()
+                        .asSequence()
+                        .map { adapter.getKey(it) to adapter.getModified(it) }
+                        .toMap()
+            }
+
+    override fun observe(): Flowable<String> = processor
 
     override fun <T> get(key: String): Maybe<T> =
             Maybe.fromCallable {
@@ -45,14 +64,15 @@ class DirectoryKrate(
             Completable.fromAction { directory.find(key)?.delete() }
 
     override fun <T> put(key: String, value: T): Completable =
-            Completable.fromAction {
-                adapter.encode(key, System.currentTimeMillis())
-                        .let { File(directory, it) }
-                        .apply { createNewFile() }
-                        .outputStream()
-                        .let { interceptor.write(key, it) }
-                        .use { serializer.write(it, value) }
-            }
+            Completable
+                    .fromAction {
+                        File(directory, adapter.encode(key, System.currentTimeMillis()))
+                                .apply { createNewFile() }
+                                .outputStream()
+                                .let { interceptor.write(key, it) }
+                                .use { serializer.write(it, value) }
+                    }
+                    .doOnComplete { processor.onNext(key) }
 
     private fun File.find(key: String): File? =
             listFiles({ _, name -> adapter.run { name.containsKey(key) } }).firstOrNull()

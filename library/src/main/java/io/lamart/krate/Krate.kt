@@ -11,6 +11,12 @@ import io.reactivex.Single
 
 interface Krate {
 
+    fun getKeys(): Single<Collection<String>>
+
+    fun getModifieds(): Single<Map<String, Long>>
+
+    fun observe(): Flowable<String>
+
     fun <T> get(key: String): Maybe<T>
 
     fun <T> getAndFetch(key: String, fetch: () -> Single<T>): Flowable<T>

@@ -10,6 +10,8 @@ interface DirectoryKrateAdapter {
 
     fun encode(key: String, modified: Long): String
 
+    fun getKey(name: String): String
+
     fun getModified(name: String): Long
 
     open class Default(protected val separator: String = " ") : DirectoryKrateAdapter {
@@ -19,8 +21,11 @@ interface DirectoryKrateAdapter {
         override fun encode(key: String, modified: Long): String =
                 "$key$separator$modified"
 
+        override fun getKey(name: String): String =
+                name.split(separator)[0]
+
         override fun getModified(name: String): Long =
-                name.split(separator).get(1).toLong()
+                name.split(separator)[1].toLong()
 
     }
 

@@ -25,6 +25,18 @@ class KeyFetcherKrateTests {
     }
 
     @Test
+    fun observe() {
+        keyFetcherKrate.observe().test().assertNoErrors().assertComplete()
+        verify(krate).observe()
+    }
+
+    @Test
+    fun getModified() {
+        keyFetcherKrate.getModified().test().assertNoErrors().assertComplete()
+        verify(krate).getModifieds()
+    }
+
+    @Test
     fun put() {
         keyFetcherKrate.put(VALUE).test().assertNoErrors().assertComplete()
         verify(krate).put(KEY, VALUE)
