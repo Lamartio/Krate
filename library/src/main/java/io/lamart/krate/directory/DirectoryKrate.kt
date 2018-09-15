@@ -3,7 +3,7 @@ package io.lamart.krate.directory
 import io.lamart.krate.Interceptor
 import io.lamart.krate.Krate
 import io.lamart.krate.Serializer
-import io.lamart.krate.utils.use
+import io.lamart.krate.use
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Maybe
@@ -54,7 +54,7 @@ class DirectoryKrate(
                 directory.find(key)
                         ?.inputStream()
                         ?.let { interceptor.read(key, it) }
-                        ?.use<InputStream, T>{ serializer.read(key, it) }
+                        ?.use<InputStream, T> { serializer.read(key, it) }
             }
 
     override fun <T> getAndFetch(key: String, fetch: () -> Single<T>): Flowable<T> =
@@ -66,7 +66,7 @@ class DirectoryKrate(
     override fun <T> getOrFetch(key: String, fetch: (modified: Long) -> Maybe<T>): Flowable<T> =
             Maybe.concat(
                     get(key),
-                    getModified(key)
+                    ensureModified(key)
                             .let(fetch)
                             .flatMapSingleElement { put(key, it).toSingleDefault(it) }
             )
@@ -88,7 +88,16 @@ class DirectoryKrate(
     private fun File.find(key: String): File? =
             listFiles({ _, name -> adapter.getKey(name) == key }).firstOrNull()
 
-    private fun getModified(key: String) =
+    override fun getModified(key: String): Maybe<Long> =
+            Maybe.fromCallable {
+                directory
+                        .find(key)
+                        ?.name
+                        ?.let(adapter::getModified)
+            }
+
+
+    private fun ensureModified(key: String) =
             directory
                     .find(key)
                     ?.name

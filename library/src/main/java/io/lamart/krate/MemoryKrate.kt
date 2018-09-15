@@ -30,6 +30,13 @@ class MemoryKrate : Krate {
                 }
             }
 
+    override fun getModified(key: String): Maybe<Long> =
+            Maybe.fromCallable {
+                synchronized(lock) {
+                    map[key]?.first
+                }
+            }
+
     override fun observe(): Flowable<String> = processor
 
     @Suppress("UNCHECKED_CAST")

@@ -9,6 +9,8 @@ interface KrateTestsSource {
 
     fun getModifieds()
 
+    fun getModified()
+
     fun put()
 
     fun get()

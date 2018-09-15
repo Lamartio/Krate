@@ -19,6 +19,14 @@ open class DummyKrate(private val pair: Pair<String, Any?>? = null) : Krate {
                 pair?.first?.let { mapOf(it to Long.MIN_VALUE) } ?: emptyMap()
             }
 
+    override fun getModified(key: String): Maybe<Long> =
+            Maybe.fromCallable {
+                when {
+                    pair != null -> Long.MIN_VALUE
+                    else -> null
+                }
+            }
+
     override fun observe(): Flowable<String> =
             pair?.first?.let { Flowable.just(it) } ?: Flowable.empty()
 

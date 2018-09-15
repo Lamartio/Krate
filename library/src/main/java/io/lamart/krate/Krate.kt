@@ -1,9 +1,5 @@
 package io.lamart.krate
 
-import io.lamart.krate.utils.Fetcher
-import io.lamart.krate.utils.FetcherKrate
-import io.lamart.krate.utils.KeyFetcherKrate
-import io.lamart.krate.utils.KeyKrate
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Maybe
@@ -31,6 +27,12 @@ interface Krate {
      */
 
     fun getModifieds(): Single<Map<String, Long>>
+
+    /**
+     * Return the modified date associated with this key.
+     */
+
+    fun getModified(key: String) : Maybe<Long>
 
     /**
      * Returns a stream that emits a key, every time a value gets added, updated or removed.
@@ -89,23 +91,5 @@ interface Krate {
     /**
      * Returns a utility Krate that will fixate the key. When using its results, the key parameter is pre-filled.
      */
-
-    fun <T> with(key: String) = KeyKrate<T>(this, key)
-
-    /**
-     * Returns a utility Krate that will fixate the networking operations by the given parameter.
-     *
-     * @param fetcher An interface that performs the network operations.
-     */
-
-    fun with(fetcher: Fetcher) = FetcherKrate(this, fetcher)
-
-    /**
-     * Returns a utility Krate that will both fixate the key and the networking operations. The only variable that is necessary to control this Krate is the value.
-     *
-     * @param fetcher An interface that performs the network operations.
-     */
-
-    fun <T> with(key: String, fetcher: Fetcher) = KeyFetcherKrate<T>(this, fetcher, key)
 
 }

@@ -1,4 +1,4 @@
-package io.lamart.krate.utils
+package io.lamart.krate
 
 import java.io.OutputStream
 

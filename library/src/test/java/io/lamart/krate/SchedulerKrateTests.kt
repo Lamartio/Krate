@@ -69,6 +69,17 @@ class SchedulerKrateTests : KrateTestsSource {
         }
     }
 
+    override fun getModified() {
+        valueKrate.getModified(KEY).test().apply {
+            assertNotComplete()
+            ioScheduler.triggerActions()
+            resultScheduler.triggerActions()
+            assertValueCount(1)
+            assertNoErrors()
+            assertComplete()
+        }
+    }
+
     @Test
     override fun put() {
         valueKrate.put(KEY, VALUE).test().apply {
@@ -86,7 +97,7 @@ class SchedulerKrateTests : KrateTestsSource {
             assertNotComplete()
             ioScheduler.triggerActions()
             resultScheduler.triggerActions()
-            assertValue(VALUE)
+            assertValueCount(1)
             assertNoErrors()
             assertComplete()
         }

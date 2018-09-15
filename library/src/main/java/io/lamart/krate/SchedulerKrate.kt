@@ -1,6 +1,10 @@
 package io.lamart.krate
 
-import io.reactivex.*
+import io.reactivex.Completable
+import io.reactivex.Flowable
+import io.reactivex.Maybe
+import io.reactivex.Scheduler
+import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 
 /**
@@ -20,7 +24,7 @@ class SchedulerKrate(
         private val ioScheduler: Scheduler = Schedulers.trampoline(),
         private val networkScheduler: Scheduler = Schedulers.trampoline(),
         private val resultScheduler: Scheduler = Schedulers.trampoline()
-) : Krate by krate {
+) : Krate {
 
     override fun getKeys(): Single<Collection<String>> =
             krate.getKeys().schedule()
@@ -33,6 +37,8 @@ class SchedulerKrate(
 
     override fun <T> get(key: String): Maybe<T> =
             krate.get<T>(key).schedule()
+
+    override fun getModified(key: String): Maybe<Long> = krate.getModified(key).schedule()
 
     override fun <T> getAndFetch(key: String, fetch: () -> Single<T>): Flowable<T> =
             krate.getAndFetch(key, { fetch().subscribeOn(networkScheduler) }).schedule()

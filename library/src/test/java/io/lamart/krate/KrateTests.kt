@@ -2,16 +2,9 @@ package io.lamart.krate
 
 import io.lamart.krate.helpers.Objects.KEY
 import io.lamart.krate.helpers.Objects.VALUE
-import io.lamart.krate.utils.Fetcher
-import io.lamart.krate.utils.FetcherKrate
-import io.lamart.krate.utils.KeyFetcherKrate
-import io.lamart.krate.utils.KeyKrate
 import io.reactivex.Maybe
 import io.reactivex.Single
-import org.hamcrest.core.IsInstanceOf
-import org.junit.Assert.assertThat
 import org.junit.Test
-import org.mockito.Mockito
 
 
 /**
@@ -61,6 +54,18 @@ abstract class KrateTests : KrateTestsSource {
                 .assertComplete()
                 .assertNoErrors()
                 .assertValue { it[KEY] != null }
+    }
+
+    override fun getModified() {
+        krate.put(KEY, VALUE)
+                .test()
+                .assertComplete()
+                .assertNoErrors()
+        krate.getModified(KEY)
+                .test()
+                .assertComplete()
+                .assertNoErrors()
+                .assertValueCount(1)
     }
 
     @Test
@@ -151,30 +156,6 @@ abstract class KrateTests : KrateTestsSource {
                 .assertNoValues()
                 .assertNoErrors()
                 .assertComplete()
-    }
-
-    @Test
-    fun withKey() {
-        assertThat(
-                krate.with<Any>(KEY),
-                IsInstanceOf(KeyKrate::class.java)
-        )
-    }
-
-    @Test
-    fun withFetcher() {
-        assertThat(
-                krate.with(Mockito.mock(Fetcher::class.java)),
-                IsInstanceOf(FetcherKrate::class.java)
-        )
-    }
-
-    @Test
-    fun withKeyFetcher() {
-        assertThat(
-                krate.with<Any>(KEY, Mockito.mock(Fetcher::class.java)),
-                IsInstanceOf(KeyFetcherKrate::class.java)
-        )
     }
 
 }
