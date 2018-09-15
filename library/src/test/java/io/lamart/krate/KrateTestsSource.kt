@@ -10,6 +10,9 @@
 
 package io.lamart.krate
 
+import io.reactivex.observers.TestObserver
+import io.reactivex.subscribers.TestSubscriber
+
 
 interface KrateTestsSource {
 
@@ -38,5 +41,31 @@ interface KrateTestsSource {
     fun getOrFetch_fetch_only()
 
     fun getOrFetch_get_only()
+
+    fun fetch()
+
+    fun <T> TestSubscriber<T>.assertNothing() = apply {
+        assertNoValues()
+        assertNoErrors()
+        assertNotComplete()
+    }
+
+    fun <T> TestSubscriber<T>.assertEnd(vararg values: T) = apply {
+        assertValues(*values)
+        assertNoErrors()
+        assertComplete()
+    }
+
+    fun <T> TestObserver<T>.assertNothing() = apply {
+        assertNoValues()
+        assertNoErrors()
+        assertNotComplete()
+    }
+
+    fun <T> TestObserver<T>.assertEnd(vararg values: T) = apply {
+        assertValues(*values)
+        assertNoErrors()
+        assertComplete()
+    }
 
 }

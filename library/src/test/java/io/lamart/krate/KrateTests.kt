@@ -168,4 +168,10 @@ abstract class KrateTests : KrateTestsSource {
                 .assertComplete()
     }
 
+    @Test
+    override fun fetch() {
+        krate.fetch(KEY, { Single.just(VALUE) })
+                .test()
+                .assertResult(VALUE)
+    }
 }

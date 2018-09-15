@@ -16,7 +16,6 @@ import io.lamart.krate.helpers.Objects.VALUE
 import io.reactivex.Maybe
 import io.reactivex.Single
 import io.reactivex.schedulers.TestScheduler
-import io.reactivex.subscribers.TestSubscriber
 import org.junit.Before
 import org.junit.Test
 
@@ -188,16 +187,15 @@ class SchedulerKrateTests : KrateTestsSource {
         }
     }
 
-}
+    @Test
+    override fun fetch() {
+        valueKrate.fetch(KEY, { Single.just(VALUE) }).test().apply {
+            assertNothing()
+            ioScheduler.triggerActions()
+            assertNothing()
+            resultScheduler.triggerActions()
+            assertResult(VALUE)
+        }
+    }
 
-private fun <T> TestSubscriber<T>.assertNothing() = apply {
-    assertNoValues()
-    assertNoErrors()
-    assertNotComplete()
-}
-
-private fun <T> TestSubscriber<T>.assertEnd(vararg values: T) = apply {
-    assertValues(*values)
-    assertNoErrors()
-    assertComplete()
 }
