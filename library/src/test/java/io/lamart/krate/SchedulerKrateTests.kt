@@ -6,13 +6,13 @@ import io.lamart.krate.helpers.Objects.VALUE
 import io.reactivex.Maybe
 import io.reactivex.Single
 import io.reactivex.schedulers.TestScheduler
+import io.reactivex.subscribers.TestSubscriber
 import org.junit.Before
 import org.junit.Test
 
 class SchedulerKrateTests : KrateTestsSource {
 
     private val ioScheduler = TestScheduler()
-    private val networkScheduler = TestScheduler()
     private val resultScheduler = TestScheduler()
 
     private lateinit var valueKrate: Krate
@@ -23,13 +23,11 @@ class SchedulerKrateTests : KrateTestsSource {
         valueKrate = SchedulerKrate(
                 DummyKrate(KEY to VALUE),
                 ioScheduler,
-                networkScheduler,
                 resultScheduler
         )
         emptyKrate = SchedulerKrate(
                 DummyKrate(),
                 ioScheduler,
-                networkScheduler,
                 resultScheduler
         )
     }
@@ -117,91 +115,79 @@ class SchedulerKrateTests : KrateTestsSource {
     @Test
     override fun getAndFetch_fetch_only() {
         emptyKrate.getAndFetch(KEY, { Single.just(VALUE) }).test().apply {
+            assertNothing()
             ioScheduler.triggerActions()
+            assertNothing()
             resultScheduler.triggerActions()
-            assertNoValues()
-            assertNotComplete()
-            networkScheduler.triggerActions()
-            resultScheduler.triggerActions()
-            assertValue(VALUE)
-            assertNoErrors()
-            assertComplete()
+            assertEnd(VALUE)
         }
     }
 
     @Test
     override fun getAndFetch_both() {
         valueKrate.getAndFetch(KEY, { Single.just(VALUE) }).test().apply {
+            assertNothing()
             ioScheduler.triggerActions()
+            assertNothing()
             resultScheduler.triggerActions()
-            assertValueAt(0, VALUE)
-            assertNotComplete()
-            networkScheduler.triggerActions()
-            resultScheduler.triggerActions()
-            assertValueAt(1, VALUE)
-            assertNoErrors()
-            assertComplete()
+            assertEnd(VALUE, VALUE)
         }
     }
 
     @Test
     override fun getOrFetch_fetch_only() {
         emptyKrate.getOrFetch(KEY, { Maybe.just(VALUE) }).test().apply {
+            assertNothing()
             ioScheduler.triggerActions()
+            assertNothing()
             resultScheduler.triggerActions()
-            assertNoValues()
-            assertNotComplete()
-            networkScheduler.triggerActions()
-            resultScheduler.triggerActions()
-            assertValue(VALUE)
-            assertNoErrors()
-            assertComplete()
+            assertEnd(VALUE)
         }
     }
 
     @Test
     override fun getOrFetch_get_only() {
         valueKrate.getOrFetch(KEY, { Maybe.empty<Any>() }).test().apply {
+            assertNothing()
             ioScheduler.triggerActions()
+            assertNothing()
             resultScheduler.triggerActions()
-            assertValue(VALUE)
-            assertNotComplete()
-            networkScheduler.triggerActions()
-            resultScheduler.triggerActions()
-            assertValue(VALUE)
-            assertNoErrors()
-            assertComplete()
+            assertEnd(VALUE)
         }
     }
 
     @Test
     override fun getOrFetch_both() {
         valueKrate.getOrFetch(KEY, { Maybe.just(VALUE) }).test().apply {
+            assertNothing()
             ioScheduler.triggerActions()
+            assertNothing()
             resultScheduler.triggerActions()
-            assertValueAt(0, VALUE)
-            assertNotComplete()
-            networkScheduler.triggerActions()
-            resultScheduler.triggerActions()
-            assertValueAt(1, VALUE)
-            assertNoErrors()
-            assertComplete()
+            assertEnd(VALUE, VALUE)
         }
     }
 
     @Test
     override fun getOrFetch_none() {
         emptyKrate.getOrFetch(KEY, { Maybe.empty<Any>() }).test().apply {
+            assertNothing()
             ioScheduler.triggerActions()
+            assertNothing()
             resultScheduler.triggerActions()
-            assertNoValues()
-            assertNotComplete()
-            networkScheduler.triggerActions()
-            resultScheduler.triggerActions()
-            assertNoValues()
-            assertNoErrors()
-            assertComplete()
+            assertEnd()
         }
     }
 
+}
+
+private fun <T> TestSubscriber<T>.assertNothing() = apply {
+    assertNoValues()
+    assertNoErrors()
+    assertNotComplete()
+}
+
+private fun <T> TestSubscriber<T>.assertEnd(vararg values: T) = apply {
+    assertValues(*values)
+    assertNoErrors()
+    assertComplete()
 }

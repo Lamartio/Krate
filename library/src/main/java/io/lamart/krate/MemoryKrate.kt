@@ -50,7 +50,7 @@ class MemoryKrate : Krate {
     override fun <T> getAndFetch(key: String, fetch: () -> Single<T>): Flowable<T> =
             Maybe.concat(
                     get<T>(key),
-                    fetch().flatMap { put(key, it).toSingleDefault(it) }.toMaybe()
+                    fetch(key, fetch).toMaybe()
             )
 
     override fun <T> getOrFetch(key: String, fetch: (modified: Long) -> Maybe<T>): Flowable<T> =
@@ -60,6 +60,9 @@ class MemoryKrate : Krate {
                             .let(fetch)
                             .flatMapSingleElement { put(key, it).toSingleDefault(it) }
             )
+
+    override fun <T> fetch(key: String, fetch: () -> Single<T>): Single<T> =
+            fetch().flatMap { put(key, it).toSingleDefault(it) }
 
     override fun remove(key: String): Completable =
             Completable.fromAction {

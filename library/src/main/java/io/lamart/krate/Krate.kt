@@ -47,6 +47,22 @@ interface Krate {
     fun <T> get(key: String): Maybe<T>
 
     /**
+     * Removes the value associated with this key.
+     */
+
+    fun remove(key: String): Completable
+
+    /**
+     * Adds or updates the value associated with this key.
+     */
+
+    fun <T> put(key: String, value: T): Completable
+
+    /**
+     * Returns a utility Krate that will fixate the key. When using its results, the key parameter is pre-filled.
+     */
+
+    /**
      * This will return 0-2 result dependent on the following steps
      *
      * - If there is a value available for this key, it will be emitted.
@@ -77,19 +93,9 @@ interface Krate {
     fun <T> getOrFetch(key: String, fetch: (modified: Long) -> Maybe<T>): Flowable<T>
 
     /**
-     * Removes the value associated with this key.
+     * This will call the fetch paramater and persist associate the result with the given key.
      */
 
-    fun remove(key: String): Completable
-
-    /**
-     * Adds or updates the value associated with this key.
-     */
-
-    fun <T> put(key: String, value: T): Completable
-
-    /**
-     * Returns a utility Krate that will fixate the key. When using its results, the key parameter is pre-filled.
-     */
+    fun <T> fetch(key: String, fetch: () -> Single<T>): Single<T>
 
 }

@@ -13,7 +13,6 @@ import io.reactivex.schedulers.Schedulers
  * The default value for any scheduler will proceed the operation on the current scheduler.
  *
  * @param ioScheduler Is used for all persistent operations.
- * @param networkScheduler Is used for all fetching operations.
  * @param resultScheduler Is used for presenting the result of any operation.
  *
  */
@@ -22,7 +21,6 @@ import io.reactivex.schedulers.Schedulers
 class SchedulerKrate(
         private val krate: Krate,
         private val ioScheduler: Scheduler = Schedulers.trampoline(),
-        private val networkScheduler: Scheduler = Schedulers.trampoline(),
         private val resultScheduler: Scheduler = Schedulers.trampoline()
 ) : Krate {
 
@@ -30,7 +28,7 @@ class SchedulerKrate(
             krate.getKeys().schedule()
 
     override fun getModifieds(): Single<Map<String, Long>> =
-            krate.getModifieds().subscribeOn(ioScheduler)
+            krate.getModifieds().schedule()
 
     override fun observe(): Flowable<String> =
             krate.observe().schedule()
@@ -41,10 +39,13 @@ class SchedulerKrate(
     override fun getModified(key: String): Maybe<Long> = krate.getModified(key).schedule()
 
     override fun <T> getAndFetch(key: String, fetch: () -> Single<T>): Flowable<T> =
-            krate.getAndFetch(key, { fetch().subscribeOn(networkScheduler) }).schedule()
+            krate.getAndFetch(key, fetch).schedule()
 
     override fun <T> getOrFetch(key: String, fetch: (modified: Long) -> Maybe<T>): Flowable<T> =
-            krate.getOrFetch(key, { fetch(it).subscribeOn(networkScheduler) }).schedule()
+            krate.getOrFetch(key, fetch).schedule()
+
+    override fun <T> fetch(key: String, fetch: () -> Single<T>): Single<T> =
+            krate.fetch(key, fetch).schedule()
 
     override fun remove(key: String): Completable = krate.remove(key).schedule()
 

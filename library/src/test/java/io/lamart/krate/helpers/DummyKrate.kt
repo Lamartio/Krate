@@ -45,6 +45,9 @@ open class DummyKrate(private val pair: Pair<String, Any?>? = null) : Krate {
                     fetch(Long.MIN_VALUE)
             )
 
+    override fun <T> fetch(key: String, fetch: () -> Single<T>): Single<T> =
+            fetch()
+
     override fun remove(key: String): Completable =
             Completable.complete()
 
