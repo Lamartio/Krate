@@ -1,9 +1,15 @@
+/*
+ * Copyright (c) 2018.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 package io.lamart.krate
 
-import io.lamart.krate.utils.Fetcher
-import io.lamart.krate.utils.FetcherKrate
-import io.lamart.krate.utils.KeyFetcherKrate
-import io.lamart.krate.utils.KeyKrate
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Maybe
@@ -33,6 +39,12 @@ interface Krate {
     fun getModifieds(): Single<Map<String, Long>>
 
     /**
+     * Return the modified date associated with this key.
+     */
+
+    fun getModified(key: String) : Maybe<Long>
+
+    /**
      * Returns a stream that emits a key, every time a value gets added, updated or removed.
      */
 
@@ -43,6 +55,22 @@ interface Krate {
      */
 
     fun <T> get(key: String): Maybe<T>
+
+    /**
+     * Removes the value associated with this key.
+     */
+
+    fun remove(key: String): Completable
+
+    /**
+     * Adds or updates the value associated with this key.
+     */
+
+    fun <T> put(key: String, value: T): Completable
+
+    /**
+     * Returns a utility Krate that will fixate the key. When using its results, the key parameter is pre-filled.
+     */
 
     /**
      * This will return 0-2 result dependent on the following steps
@@ -75,37 +103,9 @@ interface Krate {
     fun <T> getOrFetch(key: String, fetch: (modified: Long) -> Maybe<T>): Flowable<T>
 
     /**
-     * Removes the value associated with this key.
+     * This will call the fetch paramater and persist associate the result with the given key.
      */
 
-    fun remove(key: String): Completable
-
-    /**
-     * Adds or updates the value associated with this key.
-     */
-
-    fun <T> put(key: String, value: T): Completable
-
-    /**
-     * Returns a utility Krate that will fixate the key. When using its results, the key parameter is pre-filled.
-     */
-
-    fun <T> with(key: String) = KeyKrate<T>(this, key)
-
-    /**
-     * Returns a utility Krate that will fixate the networking operations by the given parameter.
-     *
-     * @param fetcher An interface that performs the network operations.
-     */
-
-    fun with(fetcher: Fetcher) = FetcherKrate(this, fetcher)
-
-    /**
-     * Returns a utility Krate that will both fixate the key and the networking operations. The only variable that is necessary to control this Krate is the value.
-     *
-     * @param fetcher An interface that performs the network operations.
-     */
-
-    fun <T> with(key: String, fetcher: Fetcher) = KeyFetcherKrate<T>(this, fetcher, key)
+    fun <T> fetch(key: String, fetch: () -> Single<T>): Single<T>
 
 }

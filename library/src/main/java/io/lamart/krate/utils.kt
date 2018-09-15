@@ -8,17 +8,19 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package io.lamart.krate.database
+package io.lamart.krate
 
-import android.provider.BaseColumns
+import java.io.OutputStream
 
-internal interface Constants {
+/**
+ * Flushes and closes the OutputStream
+ */
 
-    companion object {
-
-        const val KEY = BaseColumns._ID
-        const val MODIFIED = "modified"
-        const val VALUE = "value"
-
+fun <R> OutputStream.use(block: (OutputStream) -> R): R {
+    try {
+        return block(this)
+    } finally {
+        flush()
+        close()
     }
 }
