@@ -19,6 +19,7 @@ fun crud(krate: Krate) {
 ```
 
 Apps often rely on a webservice to provide objects. Krate is great for this data centric approach, since it persists the result of a network call before passing it through.
+
 ```kotlin
 // first gets it from persistence
 // next it does the network call and persist the result
