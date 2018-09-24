@@ -17,7 +17,6 @@ fun crud(krate: Krate) {
 ```
 
 Apps often rely on a webservice to provide objects. Krate is great for this data centric approach, since it persists the result of a network call before passing it through.
-
 ```kotlin
 // first gets it from persistence
 // next it does the network call and persist the result
@@ -27,8 +26,7 @@ fun network(krate: Krate, getUserFromApi: () -> Single<User>): Flowable<User> =
         krate.getAndFetch("userId", getUserFromApi)
 ```
 
-Based on your needs you can decide you persistence method. Images are often not welcome in a database, so Krate can manage a directory for you:
-
+Based on your needs you can decide you persistence location. Images are often not welcome in a database, so Krate can manage a directory for you:
 ```kotlin
 fun krates(context: Context, picture: ByteArray) {
     val dirKrate = DirectoryKrate(context.cacheDir)
@@ -39,19 +37,17 @@ fun krates(context: Context, picture: ByteArray) {
 }
 ```
 
-You may have the need of encryption for you may want use an alternative serializer. Krate's implementations provide easy access for this use cases:
+You may have the need of encryption or you want to use an alternative serializer. Krate's implementations provide easy access for this use cases:
 ```kotlin
-fun customKrate(context: Context) {
-    DirectoryKrate(
-            directory = context.cacheDir,
-            serializer = CustomSerializer(), // swap the default Java serialization 
-            interceptor = CustomInterceptor() // manipulate the bytes
-    )
-}
+fun customKrate(context: Context) =
+        DirectoryKrate(
+                directory = context.cacheDir,
+                serializer = CustomSerializer(), // swap the default Java serialization
+                interceptor = CustomInterceptor() // manipulate the bytes
+        )
 ```
 
 Krate offers control over the threads you want to apply your operations on. Just wrap the your Krate in a `SchedulerKrate`.
-
 ```kotlin
 fun schedulerKrate(krate: Krate): Unit =
         SchedulerKrate(

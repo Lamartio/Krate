@@ -50,13 +50,12 @@ fun krates(context: Context, picture: ByteArray) {
 class CustomSerializer : Serializer by Serializer.Default()
 class CustomInterceptor : Interceptor by Interceptor.Default
 
-fun customKrate(context: Context) {
-    DirectoryKrate(
-            directory = context.cacheDir,
-            serializer = CustomSerializer(), // swap the default Java serialization
-            interceptor = CustomInterceptor() // manipulate the bytes
-    )
-}
+fun customKrate(context: Context) =
+        DirectoryKrate(
+                directory = context.cacheDir,
+                serializer = CustomSerializer(), // swap the default Java serialization
+                interceptor = CustomInterceptor() // manipulate the bytes
+        )
 
 //fun schedulerKrate(krate: Krate): Unit =
 //        SchedulerKrate(
