@@ -25,7 +25,7 @@ Apps often rely on a webservice to provide objects. Krate is great for this data
 // emits 0, 1 or 2 results.
 
 fun network(krate: Krate, getUserFromApi: () -> Single<User>): Flowable<User> = 
-        krate.getAndFetch("userId", getUserFromApi)
+        krate.getAndFetch(key, getUserFromApi)
 ```
 
 Based on your needs you can decide you persistence location. Images are often not welcome in a database, so Krate can manage a directory for you:

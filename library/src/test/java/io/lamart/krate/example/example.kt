@@ -28,7 +28,7 @@ fun crud(krate: Krate) {
     krate.get<User>(key).subscribe { user -> /* ... */ }
 
     krate.put(key, User()).subscribe { /* ... */ }
-    
+
     krate.remove(key).subscribe { /* ... */ }
 }
 
@@ -38,7 +38,7 @@ fun crud(krate: Krate) {
 // emits 0, 1 or 2 results.
 
 fun network(krate: Krate, getUserFromApi: () -> Single<User>): Flowable<User> =
-        krate.getAndFetch("k", getUserFromApi)
+        krate.getAndFetch(key, getUserFromApi)
 
 fun krates(context: Context, picture: ByteArray) {
     val dirKrate = DirectoryKrate(context.cacheDir)
