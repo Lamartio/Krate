@@ -17,45 +17,51 @@ import io.lamart.krate.Serializer
 import io.lamart.krate.database.DatabaseKrate
 import io.lamart.krate.directory.DirectoryKrate
 import io.reactivex.Flowable
-import io.reactivex.Maybe
 import io.reactivex.Single
 
 
-class User(val name: String = "Danny")
+class User(val name: String = "Danny", val age: Int = 27)
+
+const val key = "userId"
 
 fun crud(krate: Krate) {
-    val getter: Maybe<User> = krate.get("k")
+    krate.get<User>(key).subscribe { user -> /* ... */ }
 
-    getter.subscribe { user -> }
+    krate.put(key, User()).subscribe { /* ... */ }
 
-    krate.put("k", User()) // lets store a new user
-            .andThen { krate.remove("k") } // and then remove it
-            .subscribe()
+    krate.remove(key).subscribe { /* ... */ }
 }
+
 
 // first gets it from persistence
 // next it does the network call and persist the result
 // emits 0, 1 or 2 results.
 
 fun network(krate: Krate, getUserFromApi: () -> Single<User>): Flowable<User> =
-        krate.getAndFetch("k", getUserFromApi)
+        krate.getAndFetch(key, getUserFromApi)
 
 fun krates(context: Context, picture: ByteArray) {
     val dirKrate = DirectoryKrate(context.cacheDir)
     val sqlKrate = DatabaseKrate(context.openOrCreateDatabase("test", Context.MODE_PRIVATE, null))
 
     dirKrate.put("giantPicture", picture).subscribe()
-    sqlKrate.put("smallObject", Any())
+    sqlKrate.put("smallObject", Any()).subscribe()
 }
 
 
 class CustomSerializer : Serializer by Serializer.Default()
 class CustomInterceptor : Interceptor by Interceptor.Default
 
-fun customKrate(context: Context) {
-    DirectoryKrate(
-            directory = context.cacheDir,
-            serializer = CustomSerializer(), // swap the default Java serialization
-            interceptor = CustomInterceptor() // manipulate the bytes
-    )
-}
+fun customKrate(context: Context) =
+        DirectoryKrate(
+                directory = context.cacheDir,
+                serializer = CustomSerializer(), // swap the default Java serialization
+                interceptor = CustomInterceptor() // manipulate the bytes
+        )
+
+//fun schedulerKrate(krate: Krate): Krate =
+//        SchedulerKrate(
+//                krate,
+//                Schedulers.io(), // io and network operations
+//                AndroidSchedulers.mainThread() // result is dispatched to the UI thread
+//        )

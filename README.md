@@ -2,54 +2,61 @@
 [ ![Download](https://api.bintray.com/packages/lamartio/maven/krate/images/download.svg) ](https://bintray.com/lamartio/maven/krate/_latestVersion) 
 [ ![Coverage](https://img.shields.io/badge/Coverage-90%25-brightgreen.svg) ](https://bintray.com/lamartio/maven/krate/_latestVersion) 
 
-Simple storage and network layer for Android. It is a key value store that accept any object as its value. Additionally it provides utility for encryption and custom serializers.
+Krate is a persistence layer that offer CRUD operations for a key-value store and result is delivered through a RxObservable. Additionally you can sync your offline data with a server through Krate's `fetch` functions.
 
-A Krate is an interface that has implementations for SQLiteDatabase, Files and in-memory. It supplies its operations in a reactive fashion:
+```kotlin
+class User(val name: String = "Danny", val age: Int = 27)
 
-``` kotlin
+const val key = "userId"
+
 fun crud(krate: Krate) {
-    val getter: Maybe<User> = krate.get("k")
-
-    getter.subscribe { user -> }
-
-    krate.put("k", User()) // lets store a new user
-            .andThen { krate.remove("k") } // and then remove it 
-            .subscribe()
+    krate.get<User>(key).subscribe { user -> /* ... */ }
+    
+    krate.put(key, User()).subscribe { /* ... */ }
+    
+    krate.remove(key).subscribe { /* ... */ }
 }
 ```
 
 Apps often rely on a webservice to provide objects. Krate is great for this data centric approach, since it persists the result of a network call before passing it through.
-
 ```kotlin
 // first gets it from persistence
 // next it does the network call and persist the result
 // emits 0, 1 or 2 results.
 
 fun network(krate: Krate, getUserFromApi: () -> Single<User>): Flowable<User> = 
-        krate.getAndFetch("k", getUserFromApi)
+        krate.getAndFetch(key, getUserFromApi)
 ```
 
-Based on your needs you can decide you persistence method. Image are often not welcome to a database, so Krate can manage a directory for you:
-
+Based on your needs you can decide you persistence location. Images are often not welcome in a database, so Krate can manage a directory for you:
 ```kotlin
 fun krates(context: Context, picture: ByteArray) {
     val dirKrate = DirectoryKrate(context.cacheDir)
     val sqlKrate = DatabaseKrate(context.openOrCreateDatabase("test", Context.MODE_PRIVATE, null))
     
     dirKrate.put("giantPicture", picture).subscribe()
-    sqlKrate.put("smallObject", Any())
+    sqlKrate.put("smallObject", Any()).subscribe()
 }
 ```
 
-You may have the need of encryption or you may want use an alternative serializer. Krate's implementations provide easy access for this use cases:
+You may have the need of encryption or you want to use an alternative serializer. Krate's implementations provide easy access for this use cases:
 ```kotlin
-fun customKrate(context: Context) {
-    DirectoryKrate(
-            directory = context.cacheDir,
-            serializer = CustomSerializer(), // swap the default Java serialization 
-            interceptor = CustomInterceptor() // manipulate the bytes
-    )
-}
+fun customKrate(context: Context) =
+        DirectoryKrate(
+                directory = context.cacheDir,
+                serializer = CustomSerializer(), // swap the default Java serialization
+                interceptor = CustomInterceptor() // manipulate the bytes
+        )
+```
+
+Krate offers control over the threads you want to apply your operations on. Just wrap the your Krate in a `SchedulerKrate`.
+```kotlin
+fun schedulerKrate(krate: Krate): Krate =
+        SchedulerKrate(
+                krate,
+                Schedulers.io(), // io and network operations
+                AndroidSchedulers.mainThread() // result is dispatched to the UI thread
+        )
 ```
 
 # License
