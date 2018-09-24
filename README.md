@@ -2,19 +2,17 @@
 [ ![Download](https://api.bintray.com/packages/lamartio/maven/krate/images/download.svg) ](https://bintray.com/lamartio/maven/krate/_latestVersion) 
 [ ![Coverage](https://img.shields.io/badge/Coverage-90%25-brightgreen.svg) ](https://bintray.com/lamartio/maven/krate/_latestVersion) 
 
-Simple storage and network layer for Android. It is a key value store that accept any object as its value. Additionally it provides utility for encryption and custom serializers.
+Krate is a persistence layer that offer CRUD operations for a key-value store. Each result is delivered through a RxObservable. Additionally you can sync your offline data with a server through Krate's `fetch` functions.
 
-A Krate is an interface that has implementations for SQLiteDatabase, Files and in-memory. It supplies its operations in a reactive fashion:
+```kotlin
+class User(val name: String = "Danny", val age: Int = 27)
 
-``` kotlin
+const val key = "userId"
+
 fun crud(krate: Krate) {
-    val getter: Maybe<User> = krate.get("k")
-
-    getter.subscribe { user -> }
-
-    krate.put("k", User()) // lets store a new user
-            .andThen { krate.remove("k") } // and then remove it 
-            .subscribe()
+    krate.get<User>(key).subscribe { user -> /* ... */ } 
+    krate.put<User>(key, User()).subscribe { /* ... */ } 
+    krate.remove(key).subscribe { /* ... */ } 
 }
 ```
 
@@ -26,10 +24,10 @@ Apps often rely on a webservice to provide objects. Krate is great for this data
 // emits 0, 1 or 2 results.
 
 fun network(krate: Krate, getUserFromApi: () -> Single<User>): Flowable<User> = 
-        krate.getAndFetch("k", getUserFromApi)
+        krate.getAndFetch("userId", getUserFromApi)
 ```
 
-Based on your needs you can decide you persistence method. Image are often not welcome to a database, so Krate can manage a directory for you:
+Based on your needs you can decide you persistence method. Image are often not welcome in a database, so Krate can manage a directory for you:
 
 ```kotlin
 fun krates(context: Context, picture: ByteArray) {
@@ -41,7 +39,7 @@ fun krates(context: Context, picture: ByteArray) {
 }
 ```
 
-You may have the need of encryption or you may want use an alternative serializer. Krate's implementations provide easy access for this use cases:
+You may have the need of encryption for you may want use an alternative serializer. Krate's implementations provide easy access for this use cases:
 ```kotlin
 fun customKrate(context: Context) {
     DirectoryKrate(
@@ -50,6 +48,17 @@ fun customKrate(context: Context) {
             interceptor = CustomInterceptor() // manipulate the bytes
     )
 }
+```
+
+Krate offers full control over the threads you want to apply your operations on. Just wrap the created Krate in a `SchedulerKrate`.
+
+```kotlin
+fun schedulerKrate(krate: Krate): Unit =
+        SchedulerKrate(
+                krate,
+                Schedulers.io(), // io and network operations
+                AndroidSchedulers.mainThread() // result is dispatched to the UI thread
+        )
 ```
 
 # License

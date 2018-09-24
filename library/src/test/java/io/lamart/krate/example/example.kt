@@ -17,21 +17,19 @@ import io.lamart.krate.Serializer
 import io.lamart.krate.database.DatabaseKrate
 import io.lamart.krate.directory.DirectoryKrate
 import io.reactivex.Flowable
-import io.reactivex.Maybe
 import io.reactivex.Single
 
 
-class User(val name: String = "Danny")
+class User(val name: String = "Danny", val age: Int = 27)
+
+const val key = "userId"
 
 fun crud(krate: Krate) {
-    val getter: Maybe<User> = krate.get("k")
-
-    getter.subscribe { user -> }
-
-    krate.put("k", User()) // lets store a new user
-            .andThen { krate.remove("k") } // and then remove it
-            .subscribe()
+    krate.get<User>(key).subscribe { user -> /* ... */ }
+    krate.put<User>(key, User()).subscribe { /* ... */ }
+    krate.remove(key).subscribe { /* ... */ }
 }
+
 
 // first gets it from persistence
 // next it does the network call and persist the result
@@ -59,3 +57,10 @@ fun customKrate(context: Context) {
             interceptor = CustomInterceptor() // manipulate the bytes
     )
 }
+
+//fun schedulerKrate(krate: Krate): Unit =
+//        SchedulerKrate(
+//                krate,
+//                Schedulers.io(), // io and network operations
+//                AndroidSchedulers.mainThread() // result is dispatched to the UI thread
+//        )
