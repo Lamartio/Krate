@@ -59,7 +59,7 @@ fun customKrate(context: Context) =
                 interceptor = CustomInterceptor() // manipulate the bytes
         )
 
-//fun schedulerKrate(krate: Krate): Unit =
+//fun schedulerKrate(krate: Krate): Krate =
 //        SchedulerKrate(
 //                krate,
 //                Schedulers.io(), // io and network operations

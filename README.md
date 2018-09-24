@@ -51,7 +51,7 @@ fun customKrate(context: Context) =
 
 Krate offers control over the threads you want to apply your operations on. Just wrap the your Krate in a `SchedulerKrate`.
 ```kotlin
-fun schedulerKrate(krate: Krate): Unit =
+fun schedulerKrate(krate: Krate): Krate =
         SchedulerKrate(
                 krate,
                 Schedulers.io(), // io and network operations
