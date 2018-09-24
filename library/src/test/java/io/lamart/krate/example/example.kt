@@ -43,7 +43,7 @@ fun krates(context: Context, picture: ByteArray) {
     val sqlKrate = DatabaseKrate(context.openOrCreateDatabase("test", Context.MODE_PRIVATE, null))
 
     dirKrate.put("giantPicture", picture).subscribe()
-    sqlKrate.put("smallObject", Any())
+    sqlKrate.put("smallObject", Any()).subscribe()
 }
 
 

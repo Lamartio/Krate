@@ -2,7 +2,7 @@
 [ ![Download](https://api.bintray.com/packages/lamartio/maven/krate/images/download.svg) ](https://bintray.com/lamartio/maven/krate/_latestVersion) 
 [ ![Coverage](https://img.shields.io/badge/Coverage-90%25-brightgreen.svg) ](https://bintray.com/lamartio/maven/krate/_latestVersion) 
 
-Krate is a persistence layer that offer CRUD operations for a key-value store. Each result is delivered through a RxObservable. Additionally you can sync your offline data with a server through Krate's `fetch` functions.
+Krate is a persistence layer that offer CRUD operations for a key-value store and result is delivered through a RxObservable. Additionally you can sync your offline data with a server through Krate's `fetch` functions.
 
 ```kotlin
 class User(val name: String = "Danny", val age: Int = 27)
@@ -27,7 +27,7 @@ fun network(krate: Krate, getUserFromApi: () -> Single<User>): Flowable<User> =
         krate.getAndFetch("userId", getUserFromApi)
 ```
 
-Based on your needs you can decide you persistence method. Image are often not welcome in a database, so Krate can manage a directory for you:
+Based on your needs you can decide you persistence method. Images are often not welcome in a database, so Krate can manage a directory for you:
 
 ```kotlin
 fun krates(context: Context, picture: ByteArray) {
@@ -35,7 +35,7 @@ fun krates(context: Context, picture: ByteArray) {
     val sqlKrate = DatabaseKrate(context.openOrCreateDatabase("test", Context.MODE_PRIVATE, null))
     
     dirKrate.put("giantPicture", picture).subscribe()
-    sqlKrate.put("smallObject", Any())
+    sqlKrate.put("smallObject", Any()).subscribe()
 }
 ```
 
@@ -50,7 +50,7 @@ fun customKrate(context: Context) {
 }
 ```
 
-Krate offers full control over the threads you want to apply your operations on. Just wrap the created Krate in a `SchedulerKrate`.
+Krate offers control over the threads you want to apply your operations on. Just wrap the your Krate in a `SchedulerKrate`.
 
 ```kotlin
 fun schedulerKrate(krate: Krate): Unit =
