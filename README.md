@@ -10,9 +10,9 @@ class User(val name: String = "Danny", val age: Int = 27)
 const val key = "userId"
 
 fun crud(krate: Krate) {
-    krate.get<User>(key).subscribe { user -> /* ... */ } 
-    krate.put<User>(key, User()).subscribe { /* ... */ } 
-    krate.remove(key).subscribe { /* ... */ } 
+    krate.get<User>(key).subscribe { user -> /* ... */ }
+    krate.put(key, User()).subscribe { /* ... */ }
+    krate.remove(key).subscribe { /* ... */ }
 }
 ```
 
