@@ -1,6 +1,8 @@
 # Krate
-[ ![Download](https://api.bintray.com/packages/lamartio/maven/krate/images/download.svg) ](https://bintray.com/lamartio/maven/krate/_latestVersion) 
-[ ![Coverage](https://img.shields.io/badge/Coverage-90%25-brightgreen.svg) ](https://bintray.com/lamartio/maven/krate/_latestVersion) 
+[![Download](https://api.bintray.com/packages/lamartio/maven/krate/images/download.svg)](https://bintray.com/lamartio/maven/krate/_latestVersion) 
+[![Coverage](https://img.shields.io/badge/Coverage-90%25-brightgreen.svg)](https://bintray.com/lamartio/maven/krate/_latestVersion) 
+[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-Krate-green.svg)](https://android-arsenal.com/details/1/7158)
+
 
 Krate is a persistence layer that offer CRUD operations for a key-value store and result is delivered through a RxObservable. Additionally you can sync your offline data with a server through Krate's `fetch` functions.
 
