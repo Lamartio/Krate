@@ -11,23 +11,26 @@
 package io.lamart.krate.example
 
 import android.app.Application
+import android.content.Context
 import android.database.sqlite.SQLiteDatabase
+import android.util.Log
 import com.facebook.soloader.SoLoader
 import io.lamart.krate.Krate
 import io.lamart.krate.SchedulerKrate
 import io.lamart.krate.database.DatabaseKrate
+import io.reactivex.Observable
+import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import io.reactivex.subjects.BehaviorSubject
+import java.lang.Thread.*
 
 
 class ExampleApplication : Application() {
 
     @Suppress("ReplaceSingleLineLet")
     val krate: Krate by lazy {
-        "example_database"
-                .let(::getDatabasePath)
-                .apply { createNewFile() }
-                .let { SQLiteDatabase.openOrCreateDatabase(it, null) }
+        openOrCreateDatabase("example_database", Context.MODE_PRIVATE, null)
                 .let { DatabaseKrate(database = it, interceptor = ConcealInterceptor(this)) }
                 .let { SchedulerKrate(krate = it, ioScheduler = Schedulers.io(), resultScheduler = AndroidSchedulers.mainThread()) }
     }
